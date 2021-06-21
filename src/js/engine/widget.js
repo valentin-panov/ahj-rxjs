@@ -2,9 +2,9 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 
-import { interval, of } from 'rxjs';
+import { interval, of, timer } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { catchError, map, mergeMap, timestamp } from 'rxjs/operators';
+import { catchError, delayWhen, map, mergeMap, repeatWhen, tap, timestamp } from 'rxjs/operators';
 
 import { unit, container } from './template';
 
@@ -69,17 +69,21 @@ export default class Widget {
               newMsgs.forEach((message) => this.idSet.add(message.id));
               return newMsgs;
             }),
-            timestamp(),
-            catchError(() =>
-              of({
-                value: [],
-              })
-            )
+
+            catchError(() => {
+              of([]);
+            })
+            // repeatWhen((errors) =>
+            //   errors.pipe(
+            //     tap((val) => console.log(`Value ${val} was missed!`)),
+            //     delayWhen((val) => timer(val * 1000))
+            //   )
+            // )
           )
         )
       )
       .subscribe((response) => {
-        response.value.forEach((element) => this.addUnit(element));
+        response.forEach((element) => this.addUnit(element));
       });
   }
 
