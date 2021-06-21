@@ -69,7 +69,6 @@ export default class Widget {
               newMsgs.forEach((message) => this.idSet.add(message.id));
               return newMsgs;
             }),
-
             catchError(() => {
               of([]);
             })
